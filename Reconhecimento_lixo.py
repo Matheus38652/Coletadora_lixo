@@ -46,7 +46,6 @@ def treinar_modelo(pasta_imagens):
     print("Iniciando o treinamento do modelo de reconhecimento de lixo...")
     messagebox.showinfo("Treinamento", "O treinamento foi iniciado. Por favor, aguarde a mensagem de conclusão. Isso pode levar vários minutos.")
 
-    # Aumenta a variedade das imagens de treino para o modelo generalizar melhor
     datagen = ImageDataGenerator(
         rescale=1./255, 
         rotation_range=40, 
@@ -67,9 +66,8 @@ def treinar_modelo(pasta_imagens):
     model = criar_modelo_com_transfer_learning(len(train_generator.class_indices))
     
     model.compile(optimizer=Adam(), loss='categorical_crossentropy', metrics=['accuracy'])
-    history = model.fit(train_generator, epochs=20) # 20 épocas é um bom começo
+    history = model.fit(train_generator, epochs=20)
     
-    # Salva o modelo treinado e os nomes das classes
     model.save('modelo_lixo.h5')
     with open('classes_lixo.json', 'w') as f:
         json.dump(train_generator.class_indices, f)
@@ -103,8 +101,7 @@ def reconhecer_lixo(frame, class_indices):
     indices_para_classes = {v: k for k, v in class_indices.items()}
     nome_classe = indices_para_classes[classe_index]
     
-    # Classifica tudo que for reconhecido como "Lixo" por enquanto
-    if confianca > 60: # Limiar de confiança para exibir a previsão
+    if confianca > 60:
         return f"Lixo ({nome_classe})", confianca
     return "Nenhum lixo detectado", 0
 
@@ -117,14 +114,12 @@ def atualizar_imagem(label_img):
             if model and class_indices:
                 previsao_texto, confianca = reconhecer_lixo(frame, class_indices)
                 
-                # Formata o texto para exibição no vídeo
                 texto_final = f'{previsao_texto.capitalize()} [{confianca:.1f}%]'
                 cor = (0, 255, 0) if "Lixo" in previsao_texto else (0, 0, 255)
 
                 cv2.rectangle(frame, (5, 5), (550, 40), (0, 0, 0), -1)
                 cv2.putText(frame, texto_final, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, cor, 2)
 
-            # Converte e exibe a imagem na interface Tkinter
             img_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             img_pil = Image.fromarray(img_rgb)
             img_tk = ImageTk.PhotoImage(img_pil)
