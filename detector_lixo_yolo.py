@@ -18,7 +18,7 @@ while True:
 
         annotated_frame = results[0].plot()
 
-        cv2.imshow("Detector de Lixo YOLOv8", annotated_frame)
+        cv2.imshow("Detector de Lixo", annotated_frame)
 
         if cv2.waitKey(1) & 0xFF == ord("q"):
             break
